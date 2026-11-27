@@ -1,4 +1,14 @@
-import { ExternalLink, Github, Layers, Code2, Lock, Sparkles } from 'lucide-react';
+import { useState } from 'react';
+import {
+  ChevronDown,
+  ChevronUp,
+  Code2,
+  ExternalLink,
+  Github,
+  Layers,
+  Lock,
+  Sparkles,
+} from 'lucide-react';
 import type { PortfolioProject } from '../data/projects';
 
 interface ProjectCardProps {
@@ -6,6 +16,8 @@ interface ProjectCardProps {
 }
 
 export function ProjectCard({ project }: ProjectCardProps) {
+  const [expanded, setExpanded] = useState(false);
+
   return (
     <article className={`project-card ${project.isComingSoon ? 'project-card--muted' : ''}`}>
       <div className="project-card__preview">
@@ -14,14 +26,14 @@ export function ProjectCard({ project }: ProjectCardProps) {
         ) : (
           <div className="project-card__placeholder">
             {project.category === 'employer' ? (
-              <Layers size={28} strokeWidth={1.6} />
+              <Layers size={28} strokeWidth={1.5} />
             ) : (
-              <Sparkles size={28} strokeWidth={1.6} />
+              <Sparkles size={28} strokeWidth={1.5} />
             )}
             <span>
               {project.isComingSoon
                 ? 'Demo preview coming soon'
-                : 'Add a screenshot or GIF in public/previews/'}
+                : 'Screenshot / preview slot (public/previews/)'}
             </span>
           </div>
         )}
@@ -37,51 +49,62 @@ export function ProjectCard({ project }: ProjectCardProps) {
 
         <h3 className="project-card__title">{project.title}</h3>
 
-        <p className="project-card__section">
-          <strong>Overview:</strong> {project.overview}
-        </p>
-
-        <p className="project-card__section">
-          <strong>My Role:</strong> {project.myRole}
-        </p>
-
-        <div className="project-card__tags">
-          {project.techStack.map((tech) => (
-            <span key={tech} className="tag">
-              {tech}
-            </span>
-          ))}
+        <div className="project-card__stack">
+          <span className="stack-label">Made with</span>
+          <p className="stack-list">{project.techStack.join(' · ')}</p>
         </div>
 
+        <p className="project-card__section">{project.overview}</p>
+
+        {expanded && (
+          <div className="project-card__details">
+            <p className="project-card__section">
+              <strong>My Role:</strong> {project.myRole}
+            </p>
+          </div>
+        )}
+
         <div className="project-card__footer">
-          <div className="project-card__actions">
-            {project.liveUrl && (
-              <a
-                href={project.liveUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn btn--primary"
-              >
-                View Live App
-                <ExternalLink size={15} />
-              </a>
-            )}
-            {project.repoUrl && (
-              <a
-                href={project.repoUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn btn--secondary"
-              >
-                <Github size={15} />
-                Source Code
-              </a>
-            )}
-            {project.isComingSoon && (
-              <span className="coming-soon-pill">
-                <Code2 size={14} /> In Development
-              </span>
-            )}
+          <div className="project-card__footer-row">
+            <div className="project-card__actions">
+              {project.liveUrl && (
+                <a
+                  href={project.liveUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn btn--primary"
+                >
+                  View Live App
+                  <ExternalLink size={14} />
+                </a>
+              )}
+              {project.repoUrl && (
+                <a
+                  href={project.repoUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn btn--secondary"
+                >
+                  <Github size={14} />
+                  Source Code
+                </a>
+              )}
+              {project.isComingSoon && (
+                <span className="coming-soon-pill">
+                  <Code2 size={14} /> In Development
+                </span>
+              )}
+            </div>
+
+            <button
+              type="button"
+              className="btn btn--ghost"
+              aria-expanded={expanded}
+              onClick={() => setExpanded((prev) => !prev)}
+            >
+              {expanded ? 'Show Less' : 'Read More'}
+              {expanded ? <ChevronUp size={15} /> : <ChevronDown size={15} />}
+            </button>
           </div>
 
           {project.hostingNote && (
